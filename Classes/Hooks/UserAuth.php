@@ -54,9 +54,6 @@ class UserAuth extends \TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentica
 					}
 				}
 			} elseif ( $this->loginType === 'logout' && $this->isCookieSet() ) {
-				$cookieDomain = $this->getCookieDomain();
-				// If no cookie domain is set, use the base path
-				$cookiePath = $cookieDomain ? '/' : \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_SITE_PATH');
 				setcookie('typo_user_pn', NULL, -1, $cookiePath, $cookieDomain);
 			}
 		}
