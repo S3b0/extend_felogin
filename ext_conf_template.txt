@@ -1,0 +1,2 @@
+#cat=basic//10;type=int+;label=Usergroup (Partner.Net): The Fe-Usergroup to set cookies for!
+pnGroup = 0
