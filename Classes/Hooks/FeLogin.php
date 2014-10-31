@@ -16,6 +16,7 @@ class FeLogin extends \TYPO3\CMS\Frontend\Authentication\FrontendUserAuthenticat
 	public $loginType = '';
 
 	public function hook_login_confirmed(array $params = array(), \TYPO3\CMS\Felogin\Controller\FrontendLoginController $frontendLoginController = NULL) {
+		$this->setPNCookieName();
 		if ( TYPO3_MODE === 'FE' ){
 			/** @var \TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController $tsfe */
 			$tsfe = $GLOBALS['TSFE'];
@@ -38,7 +39,7 @@ class FeLogin extends \TYPO3\CMS\Frontend\Authentication\FrontendUserAuthenticat
 
 				// Do not set cookie if cookieSecure is set to "1" (force HTTPS) and no secure channel is used:
 				if ((int)$settings['cookieSecure'] !== 1 || \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_SSL')) {
-					setcookie('typo_user_pn', $this->id, $cookieExpire, $cookiePath, $cookieDomain, $cookieSecure, $cookieHttpOnly);
+					setcookie($this->name, $this->id, $cookieExpire, $cookiePath, $cookieDomain, $cookieSecure, $cookieHttpOnly);
 					$this->cookieWasSetOnCurrentRequest = TRUE;
 				}
 			}
@@ -46,6 +47,7 @@ class FeLogin extends \TYPO3\CMS\Frontend\Authentication\FrontendUserAuthenticat
 	}
 
 	public function hook_logout_confirmed(array $params = array(), \TYPO3\CMS\Felogin\Controller\FrontendLoginController $frontendLoginController = NULL) {
+		$this->setPNCookieName();
 		if ( TYPO3_MODE === 'FE' ) {
 			$this->loginType = 'logout';
 
@@ -57,12 +59,13 @@ class FeLogin extends \TYPO3\CMS\Frontend\Authentication\FrontendUserAuthenticat
 				// If no cookie domain is set, use the base path:
 				$cookiePath = $cookieDomain ? '/' : \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_SITE_PATH');
 
-				setcookie('typo_user_pn', NULL, -1, $cookiePath, $cookieDomain);
+				setcookie($this->name, NULL, -1, $cookiePath, $cookieDomain);
 			}
 		}
 	}
 
 	public function hook_beforeRedirect(array $params = array(), \TYPO3\CMS\Felogin\Controller\FrontendLoginController $frontendLoginController = NULL) {
+		$this->setPNCookieName();
 		if ( TYPO3_MODE === 'FE' ) {
 			$this->loginType = $params['loginType'];
 
@@ -87,7 +90,7 @@ class FeLogin extends \TYPO3\CMS\Frontend\Authentication\FrontendUserAuthenticat
 
 					// Do not set cookie if cookieSecure is set to "1" (force HTTPS) and no secure channel is used:
 					if ((int)$settings['cookieSecure'] !== 1 || \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_SSL')) {
-						setcookie('typo_user_pn', $this->id, $cookieExpire, $cookiePath, $cookieDomain, $cookieSecure, $cookieHttpOnly);
+						setcookie($this->name, $this->id, $cookieExpire, $cookiePath, $cookieDomain, $cookieSecure, $cookieHttpOnly);
 						$this->cookieWasSetOnCurrentRequest = TRUE;
 					}
 				}
@@ -99,9 +102,13 @@ class FeLogin extends \TYPO3\CMS\Frontend\Authentication\FrontendUserAuthenticat
 				// If no cookie domain is set, use the base path:
 				$cookiePath = $cookieDomain ? '/' : \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_SITE_PATH');
 
-				setcookie('typo_user_pn', NULL, -1, $cookiePath, $cookieDomain);
+				setcookie($this->name, NULL, -1, $cookiePath, $cookieDomain);
 			}
 		}
+	}
+
+	public function setPNCookieName() {
+		$this->name = 'typo_user_pn';
 	}
 
 }
